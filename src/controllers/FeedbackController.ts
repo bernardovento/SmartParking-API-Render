@@ -11,13 +11,32 @@ class FeedbackController {
     constructor() {}
 
     // Método para listar todos os feedbacks
-    async listFeedback(req: Request, res: Response) {
+    async listAllFeedback(req: Request, res: Response) {
         try {
             const feedback = await prisma.feedback.findMany();
             res.json(feedback);
         } catch (error) {
             console.error(error);
             return res.status(500).json({
+                message: "Erro ao listar todos os feedbacks",
+            });
+        }
+    }
+
+    // Método para listar apenas os feedbacks válidos
+    async listFeedback(req: Request, res: Response) {
+        try {
+            const validFeedback = await prisma.feedback.findMany({
+                where: {
+                    validContent: 'valido',  // Verifica se o conteúdo é válido
+                    validName: 'valido',     // Verifica se o nome é válido
+                },
+            });
+            res.json(validFeedback);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                message: "Erro ao listar feedbacks válidos",
             });
         }
     }
