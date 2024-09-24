@@ -20,6 +20,6 @@ app.use(VagaRouter);
 
 
 
-app.listen(process.env.PORTA_SERVER, function () {
+app.listen(process.env.PORT ? Number(process.env.PORT): 3333, function () {
   console.log("Servidor rodando na porta " + process.env.PORTA_SERVER);
 });
