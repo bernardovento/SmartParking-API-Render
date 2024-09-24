@@ -30,6 +30,9 @@ class FeedbackController {
                 where: {
                     validContent: 'valido',  // Verifica se o conteúdo é válido
                     validName: 'valido',     // Verifica se o nome é válido
+                    name: {
+                        not: '',             // Não retorna feedbacks com nome vazio
+                    },
                 },
             });
             res.json(validFeedback);
@@ -40,7 +43,7 @@ class FeedbackController {
             });
         }
     }
-
+    
     // Método para criar um novo feedback
     async createFeedback(req: Request, res: Response) {
         const { content, name } = req.body; // Garantir que os dados vêm do req.body
@@ -141,7 +144,55 @@ class FeedbackController {
             message: "Falha ao deletar o registro",
           });
         }
-      }      
+      }    
+      async validateFeedback(req: Request, res: Response) {
+        try {
+            // Pegue o token do cabeçalho de autorização
+            const authHeader = req.headers.authorization;
+    
+            if (!authHeader) {
+                return res.status(401).json({
+                    message: "Autenticação necessária",
+                });
+            }
+    
+            // O token normalmente vem no formato "Bearer TOKEN", então precisamos separá-lo
+            const token = authHeader.split(' ')[1];
+    
+            // Verifique o token (supondo que 'verifyToken' valide se o token pertence a um administrador)
+            const decoded = await verifyToken(token);
+    
+            if (!decoded) {
+                return res.status(401).json({
+                    message: "Token inválido ou expirado",
+                });
+            }
+    
+            // Token válido e permissões de administrador concedidas, então prossiga com a validação do feedback
+            const id = req.params.id;
+    
+            const updatedFeedback = await prisma.feedback.update({
+                where: {
+                    id: parseInt(id),
+                },
+                data: {
+                    validName: 'valido',
+                    validContent: 'valido',
+                },
+            });
+    
+            res.status(200).json({
+                status: 200,
+                message: "Feedback validado com sucesso",
+                updatedFeedback,
+            });
+        } catch (error) {
+            console.error(error);
+            res.status(400).json({
+                message: "Falha ao validar o feedback",
+            });
+        }
+    }  
 }
 
 export default new FeedbackController();

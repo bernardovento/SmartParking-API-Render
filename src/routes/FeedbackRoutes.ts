@@ -15,4 +15,8 @@ FeedbackRouter.post("/feedback", FeedbackController.createFeedback);
 // Deletar um feedback pelo ID
 FeedbackRouter.delete("/feedback/:id", FeedbackController.deleteFeedback);
 
+// Forçar a validação de um feedback
+FeedbackRouter.put("/feedback/:id/validate", FeedbackController.validateFeedback);
+
+
 export default FeedbackRouter;

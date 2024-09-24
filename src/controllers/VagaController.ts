@@ -5,6 +5,14 @@ import fetch from 'node-fetch';
 
 const prisma = new PrismaClient();
 
+function getRandomColor(): string {
+  const letters = '0123456789ABCDEF';
+  let color = '#';
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 class VagaController {
     constructor() {}
 
@@ -81,15 +89,25 @@ class VagaController {
             return res.status(500).json({ message: "Erro ao processar a resposta da API para o nome." });
           }
       
-          if (!validName.classificação || validName.classificação === "invalido") {
+          if (!validName.classificação) {
             return res.status(500).json({ message: "Classificação inválida no retorno da API." });
           }
-      
+
+          if (validName.classificação === "invalido") {
+            return res.status(400).json({ message: "Nome inválido. Por favor, insira um nome válido." });
+          }
+          
+
+          const randomColor = getRandomColor();
+
           const updatedVaga = await prisma.vaga.update({
             where: {
               id: parseInt(id),
             },
-            data: { name },
+            data: { 
+              name,
+              color : randomColor
+             },
           });
       
           if (updatedVaga) {
@@ -98,13 +116,13 @@ class VagaController {
               try {
                 await prisma.vaga.update({
                   where: { id: parseInt(id) },
-                  data: { name: '' },
+                  data: { name: '', color: '' },
                 });
                 console.log(`Vaga com ID ${id} teve o nome limpo após 5 minutos.`);
               } catch (error) {
                 console.error(`Erro ao limpar o nome da vaga com ID ${id}:`, error);
               }
-            }, 30000); // 30000 milissegundos = 0.5 minutos
+            }, 300000); // 300000 milissegundos = 5 minutos
       
             return res.json({
               status: 200,
