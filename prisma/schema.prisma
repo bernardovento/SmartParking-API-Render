@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  name     String?
+  password String?
+}
+
+model Feedback {
+  id       Int       @id @default(autoincrement())
+  name     String?
+  content  String
+  validName String?
+  validContent String?
+}
+
+model Vaga {
+  id       Int       @id @default(autoincrement())
+  name     String?
+}
+
+model Session{
+  id        Int     @id @default(autoincrement())
+  tokken String
+  createdAt DateTime @default(now())
+  experiationAt DateTime?
+}
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
