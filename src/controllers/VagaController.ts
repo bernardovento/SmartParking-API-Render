@@ -122,7 +122,7 @@ class VagaController {
               } catch (error) {
                 console.error(`Erro ao limpar o nome da vaga com ID ${id}:`, error);
               }
-            }, 300000); // 300000 milissegundos = 5 minutos
+            }, 1800000); // 1800000 milissegundos = 30 minutos
       
             return res.json({
               status: 200,
